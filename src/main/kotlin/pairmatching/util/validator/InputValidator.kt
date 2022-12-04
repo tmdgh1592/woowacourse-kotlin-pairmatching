@@ -1,5 +1,6 @@
 package pairmatching.util.validator
 
+import pairmatching.domain.Course
 import pairmatching.domain.Level
 import pairmatching.domain.Mission
 
@@ -34,8 +35,7 @@ class InputValidator : Validator() {
     }
 
     private fun validateCourse(course: String) {
-        val courses = listOf("백엔드", "프론트엔드")
-        if (course !in courses) {
+        if (course !in Course.provideCourses()) {
             throw IllegalArgumentException(INVALID_COURSE_EXCEPTION_MESSAGE)
         }
     }

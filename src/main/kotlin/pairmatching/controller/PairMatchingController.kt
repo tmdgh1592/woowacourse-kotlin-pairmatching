@@ -7,14 +7,18 @@ class PairMatchingController(
 ) {
 
     fun startPairMatching() {
-        val option = selectOption()
-        performOption(option)
+        do {
+            val option = selectOption()
+            val quit = performOption(option)
+        } while (quit)
     }
 
-    private fun performOption(option: String) {
-        when(option) {
+    private fun performOption(option: String): Boolean {
+        when (option) {
             pairMatchingOption -> pairMatching()
+            quitOption -> return QUIT
         }
+        return CONTINUE
     }
 
     private fun pairMatching() {
@@ -26,5 +30,9 @@ class PairMatchingController(
 
     companion object {
         private const val pairMatchingOption = "1"
+        private const val quitOption = "Q"
+
+        private const val QUIT = false
+        private const val CONTINUE = true
     }
 }

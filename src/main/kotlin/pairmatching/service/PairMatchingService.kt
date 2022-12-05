@@ -75,6 +75,11 @@ class PairMatchingService : Service() {
         return false
     }
 
+    fun clearPair() {
+        matchedCrewByLevel.clear()
+        matchedCrewByMission.clear()
+    }
+
     private fun getShuffledCrews(course: String): MutableList<Crew> {
         val crews = getCrews(Course.convertCourse(course))
         return Randoms.shuffle(crews)

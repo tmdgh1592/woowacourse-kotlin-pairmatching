@@ -10,8 +10,7 @@ import pairmatching.util.reader.CrewReader
 class PairMatchingService : Service() {
     private val crewReader = CrewReader()
     private val matchedCrewByLevel = hashMapOf<Level, HashMap<Crew, ArrayList<Crew>>>()
-    private val matchedCrewByMission =
-        hashMapOf<Course, HashMap<String, List<List<Crew>>>>().withDefault { hashMapOf() }
+    private val matchedCrewByMission = hashMapOf<Course, HashMap<String, List<List<Crew>>>>()
 
     fun getMatchedCrews(course: Course, mission: String): List<List<Crew>> {
         return matchedCrewByMission[course]?.get(mission) ?: emptyList()
@@ -35,8 +34,7 @@ class PairMatchingService : Service() {
     }
 
     private fun addCrewsByLevel(
-        newMatchedCrews: List<List<Crew>>,
-        convertedLevel: Level
+        newMatchedCrews: List<List<Crew>>, convertedLevel: Level
     ) {
         newMatchedCrews.forEach { pair ->
             pair.forEach { crew ->
@@ -46,14 +44,9 @@ class PairMatchingService : Service() {
     }
 
     private fun setCrewsByMission(
-        course: String,
-        mission: String,
-        newMatchedCrews: List<List<Crew>>
+        course: String, mission: String, newMatchedCrews: List<List<Crew>>
     ) {
-        if (matchedCrewByMission[convertCourse(course)] == null) {
-            matchedCrewByMission[convertCourse(course)] = hashMapOf()
-        }
-        matchedCrewByMission[convertCourse(course)]!![mission] = newMatchedCrews
+        matchedCrewByMission.getOrPut(convertCourse(course)) { hashMapOf(mission to newMatchedCrews) }
     }
 
     fun isMatched(course: Course, mission: String): Boolean {

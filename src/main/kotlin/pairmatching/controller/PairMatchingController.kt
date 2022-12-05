@@ -18,15 +18,15 @@ class PairMatchingController(
 
     private fun performOption(option: String): Boolean {
         when (option) {
-            pairMatchingOption -> pairMatching()
-            showMatchedCrewOption -> inquireMatchedCrews()
+            MATCH_PAIR_OPTION -> matchPair()
+            SHOW_PAIR_OPTION -> inquirePair()
             INIT_OPTION -> initPair()
-            quitOption -> return QUIT
+            QUIT_OPTION -> return QUIT
         }
         return CONTINUE
     }
 
-    private fun pairMatching() {
+    private fun matchPair() {
         val (course, level, mission) = pairMatchingView.selectPairMatchingCondition()
         if (pairMatchingService.isMatched(mission)) { // 이미 매칭된 미션인 경우
             val isRematch = pairMatchingView.enterRematch()
@@ -38,7 +38,7 @@ class PairMatchingController(
         }
     }
 
-    private fun inquireMatchedCrews() {
+    private fun inquirePair() {
         val (_, _, mission) = pairMatchingView.selectPairMatchingCondition()
         val matchedCrews = getMatchedCrews(mission)
         showMatchedCrews(matchedCrews)
@@ -58,10 +58,10 @@ class PairMatchingController(
     private fun selectOption(): String = pairMatchingView.selectOption()
 
     companion object {
-        private const val pairMatchingOption = "1"
-        private const val showMatchedCrewOption = "2"
+        private const val MATCH_PAIR_OPTION = "1"
+        private const val SHOW_PAIR_OPTION = "2"
         private const val INIT_OPTION = "3"
-        private const val quitOption = "Q"
+        private const val QUIT_OPTION = "Q"
 
         private const val QUIT = false
         private const val CONTINUE = true

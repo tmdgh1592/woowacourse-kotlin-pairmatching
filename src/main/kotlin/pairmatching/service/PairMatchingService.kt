@@ -3,30 +3,29 @@ package pairmatching.service
 import camp.nextstep.edu.missionutils.Randoms
 import pairmatching.domain.Course
 import pairmatching.domain.Course.Companion.convertCourse
-import pairmatching.domain.Crew
 import pairmatching.domain.Level
 import pairmatching.util.reader.CrewReader
 
 class PairMatchingService : Service() {
     private val crewReader = CrewReader()
-    private val matchedCrewByLevel = hashMapOf<Level, HashMap<Crew, ArrayList<Crew>>>()
-    private val matchedCrewByMission = hashMapOf<Course, HashMap<String, List<List<Crew>>>>()
+    private val matchedCrewByLevel = hashMapOf<Course, HashMap<Level, HashMap<String, ArrayList<String>>>>()
+    private val matchedCrewByMission = hashMapOf<Course, HashMap<String, List<List<String>>>>()
 
-    fun getMatchedCrews(course: Course, mission: String): List<List<Crew>> {
+    fun getMatchedCrews(course: Course, mission: String): List<List<String>> {
         return matchedCrewByMission[course]?.get(mission) ?: emptyList()
     }
 
-    fun matchCrew(course: String, level: String, mission: String): List<List<Crew>> {
-        val shuffledCrews = getShuffledCrews(course)
+    fun matchCrew(course: String, level: String, mission: String): List<List<String>> {
+        val shuffledCrews = getShuffledCrews(convertCourse(course))
 
         for (turn in 0 until 3) {
             val newMatchedCrews = match(shuffledCrews)
             val convertedLevel = Level.convertLevel(level)
 
-            if (checkDuplication(newMatchedCrews, convertedLevel)) { // 중복된 경우 다시 매칭
+            if (checkDuplication(newMatchedCrews, convertCourse(course), convertedLevel)) { // 중복된 경우 다시 매칭
                 continue
             }
-            addCrewsByLevel(newMatchedCrews, convertedLevel)
+            addCrewsByLevel(newMatchedCrews, convertCourse(course), convertedLevel)
             setCrewsByMission(course, mission, newMatchedCrews)
             return newMatchedCrews
         }
@@ -34,17 +33,23 @@ class PairMatchingService : Service() {
     }
 
     private fun addCrewsByLevel(
-        newMatchedCrews: List<List<Crew>>, convertedLevel: Level
+        newMatchedCrews: List<List<String>>, course: Course, level: Level
     ) {
         newMatchedCrews.forEach { pair ->
             pair.forEach { crew ->
-                matchedCrewByLevel[convertedLevel]?.get(crew)?.addAll(pair)
+                if (matchedCrewByLevel[course] == null) {
+                    matchedCrewByLevel[course] = hashMapOf()
+                }
+                if (matchedCrewByLevel[course]!![level] == null) {
+                    matchedCrewByLevel[course]!![level] = hashMapOf()
+                }
+                matchedCrewByLevel[course]!![level]!![crew]?.addAll(pair)
             }
         }
     }
 
     private fun setCrewsByMission(
-        course: String, mission: String, newMatchedCrews: List<List<Crew>>
+        course: String, mission: String, newMatchedCrews: List<List<String>>
     ) {
         matchedCrewByMission.getOrPut(convertCourse(course)) { hashMapOf(mission to newMatchedCrews) }
     }
@@ -56,13 +61,13 @@ class PairMatchingService : Service() {
         return true
     }
 
-    private fun match(crews: List<Crew>): List<List<Crew>> {
+    private fun match(crews: List<String>): List<List<String>> {
         if (crews.size < MINIMUM_MATCHING_CREWS_SIZE) { // 최소 매칭 숫자
             throw IllegalArgumentException(INVALID_MATCHING_SIZE_EXCEPTION_MESSAGE)
         }
 
         val mutableCrews = ArrayList(crews)
-        val matchedCrews = arrayListOf<List<Crew>>()
+        val matchedCrews = arrayListOf<List<String>>()
         while (mutableCrews.isNotEmpty()) {
             if (mutableCrews.size == MINIMUM_MATCHING_CREWS_ODD_SIZE) { // 3명 남은 경우
                 matchedCrews.add(mutableCrews.slice(0 until MINIMUM_MATCHING_CREWS_ODD_SIZE))
@@ -74,8 +79,8 @@ class PairMatchingService : Service() {
         return matchedCrews
     }
 
-    private fun checkDuplication(matchedCrews: List<List<Crew>>, level: Level): Boolean {
-        val matchedCrewsByLevel = matchedCrewByLevel[level] ?: return false
+    private fun checkDuplication(matchedCrews: List<List<String>>, course: Course, level: Level): Boolean {
+        val matchedCrewsByLevel = matchedCrewByLevel[course]?.get(level) ?: return false
         matchedCrews.forEach { crews ->
             crews.forEach { crew ->
                 val expectedSize = crews.size + (matchedCrewsByLevel[crew]?.size ?: 0)
@@ -93,12 +98,11 @@ class PairMatchingService : Service() {
         matchedCrewByMission.clear()
     }
 
-    private fun getShuffledCrews(course: String): List<Crew> {
-        val crews = getCrews(Course.convertCourse(course))
-        return Randoms.shuffle(crews)
+    private fun getShuffledCrews(course: Course): List<String> {
+        return Randoms.shuffle(getCrews(course))
     }
 
-    private fun getCrews(course: Course): List<Crew> = crewReader.readCrew(course)
+    private fun getCrews(course: Course): List<String> = crewReader.readCrew(course)
 
     companion object {
         private const val MINIMUM_MATCHING_CREWS_SIZE = 2

@@ -1,7 +1,6 @@
 package pairmatching.presentation
 
 import camp.nextstep.edu.missionutils.Console
-import pairmatching.domain.Crew
 import pairmatching.util.validator.CrewValidator
 import pairmatching.util.validator.InputValidator
 
@@ -46,7 +45,7 @@ class PairMatchingView(
         }
     }
 
-    fun printMatchedCrews(matchedCrews: List<List<Crew>>) {
+    fun printMatchedCrews(matchedCrews: List<List<String>>) {
         runCatching {
             crewValidator.validateIsExistCrewPair(matchedCrews)
         }.onSuccess {

@@ -1,20 +1,19 @@
 package pairmatching.util.reader
 
 import pairmatching.domain.Course
-import pairmatching.domain.Crew
 import java.io.File
 
 class CrewReader {
 
-    fun readCrew(course: Course): List<Crew> {
-        val crews = arrayListOf<Crew>()
+    fun readCrew(course: Course): List<String> {
+        val crews = arrayListOf<String>()
         var crewName: String?
         val backendCrewFile = File(getPath(course))
 
         backendCrewFile.bufferedReader().use {
             while (true) {
                 crewName = it.readLine()
-                crewName?.let { name -> crews.add(Crew(course, name)) } ?: break
+                crewName?.let { name -> crews.add(name) } ?: break
             }
         }
         return crews

@@ -1,7 +1,6 @@
 package pairmatching.controller
 
 import pairmatching.domain.Course
-import pairmatching.domain.Crew
 import pairmatching.presentation.PairMatchingView
 import pairmatching.service.PairMatchingService
 
@@ -46,7 +45,7 @@ class PairMatchingController(
         showMatchedCrews(matchedCrews)
     }
 
-    private fun showMatchedCrews(matchedCrews: List<List<Crew>>) {
+    private fun showMatchedCrews(matchedCrews: List<List<String>>) {
         pairMatchingView.printMatchedCrews(matchedCrews)
     }
 
@@ -55,7 +54,7 @@ class PairMatchingController(
         pairMatchingView.printInitializedMessage()
     }
 
-    private fun getMatchedCrews(course: Course, mission: String): List<List<Crew>> =
+    private fun getMatchedCrews(course: Course, mission: String): List<List<String>> =
         pairMatchingService.getMatchedCrews(course, mission)
 
     private fun selectOption(): String = pairMatchingView.selectOption()

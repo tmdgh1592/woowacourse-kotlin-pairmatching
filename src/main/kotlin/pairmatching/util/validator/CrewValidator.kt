@@ -1,9 +1,7 @@
 package pairmatching.util.validator
 
-import pairmatching.domain.Crew
-
 class CrewValidator : Validator() {
-    fun validateIsExistCrewPair(crews: List<List<Crew>>) {
+    fun validateIsExistCrewPair(crews: List<List<String>>) {
         if (crews.isEmpty()) {
             throw IllegalArgumentException(NO_MATCHED_EXCEPTION_MESSAGE)
         }

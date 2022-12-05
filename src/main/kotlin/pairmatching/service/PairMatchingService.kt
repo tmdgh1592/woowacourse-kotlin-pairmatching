@@ -21,20 +21,26 @@ class PairMatchingService : Service() {
         for (turn in 0 until 3) {
             val newMatchedCrews = match(shuffledCrews)
             val convertedLevel = Level.convertLevel(level)
+
             if (checkDuplication(newMatchedCrews, convertedLevel)) { // 중복된 경우 다시 매칭
                 continue
             }
-            newMatchedCrews.forEach { crews ->
-                crews.forEach { crew ->
-                    matchedCrewByLevel[convertedLevel]?.get(crew)?.addAll(crews)
-                }
-            }
-
+            addCrewByLevel(newMatchedCrews, convertedLevel)
             matchedCrewByMission[mission] = newMatchedCrews
             return newMatchedCrews
         }
-
         throw IllegalArgumentException(UNABLE_TO_MATCH_EXCEPTION_MESSAGE)
+    }
+
+    private fun addCrewByLevel(
+        newMatchedCrews: List<List<Crew>>,
+        convertedLevel: Level
+    ) {
+        newMatchedCrews.forEach { pair ->
+            pair.forEach { crew ->
+                matchedCrewByLevel[convertedLevel]?.get(crew)?.addAll(pair)
+            }
+        }
     }
 
     fun isMatched(mission: String): Boolean {

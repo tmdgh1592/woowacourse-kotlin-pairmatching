@@ -17,7 +17,9 @@ class PairMatchingService : Service() {
         for (turn in 0 until 3) {
             val newMatchedCrews = match(shuffledCrews)
             val convertedLevel = Level.convertLevel(level)
-
+            if (checkDuplication(newMatchedCrews, convertedLevel)) { // 중복된 경우 다시 매칭
+                continue
+            }
             newMatchedCrews.forEach { crews ->
                 crews.forEach { crew ->
                     matchedCrewByLevel[convertedLevel]?.get(crew)?.addAll(crews)
@@ -53,6 +55,20 @@ class PairMatchingService : Service() {
             crews.subList(0, MINIMUM_MATCHING_CREWS_SIZE).clear()
         }
         return matchedCrews
+    }
+
+    private fun checkDuplication(matchedCrews: List<List<Crew>>, level: Level): Boolean {
+        val matchedCrewsByLevel = matchedCrewByLevel[level] ?: return false
+        matchedCrews.forEach { crews ->
+            crews.forEach { crew ->
+                val expectedSize = crews.size + (matchedCrewsByLevel[crew]?.size ?: 0)
+                val nonDuplicatedSize = crews.union(matchedCrewsByLevel[crew] ?: emptyList()).size
+                if (expectedSize != nonDuplicatedSize) {
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     private fun getShuffledCrews(course: String): MutableList<Crew> {

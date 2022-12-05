@@ -2,5 +2,9 @@ package pairmatching.domain
 
 data class Crew(
     private val course: Course,
-    val name: String
-)
+    private val name: String
+) {
+    override fun toString(): String {
+        return name
+    }
+}

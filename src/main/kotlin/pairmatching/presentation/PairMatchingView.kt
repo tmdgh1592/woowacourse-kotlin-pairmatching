@@ -51,7 +51,7 @@ class PairMatchingView(
             crewValidator.validateIsExistCrewPair(matchedCrews)
         }.onSuccess {
             matchedCrews.forEach { crews ->
-                val pairMatchedCrewNames = crews.map { crew -> crew.name }
+                val pairMatchedCrewNames = crews.map { it.toString() }
                 println(pairMatchedCrewNames.joinToString(" : "))
             }
         }.onFailure { printError(it) }

@@ -12,7 +12,7 @@ internal class ApplicationTest : NsTest() {
             {
                 run("1", "백엔드, 레벨1, 자동차경주", "Q")
                 Assertions.assertThat(output()).contains("태웅 : 백호", "치수 : 태섭")
-            }, Arrays.asList("태웅", "백호", "치수", "태섭")
+            }, listOf("태웅", "백호", "치수", "태섭")
         )
     }
 

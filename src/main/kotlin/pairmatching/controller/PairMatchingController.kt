@@ -34,9 +34,10 @@ class PairMatchingController(
             if (isRematch) {
                 showMatchedCrews(pairMatchingService.matchCrew(course, level, mission))
             }
-        } else {
-            showMatchedCrews(pairMatchingService.matchCrew(course, level, mission))
+            return
         }
+
+        showMatchedCrews(pairMatchingService.matchCrew(course, level, mission))
     }
 
     private fun inquirePair() {
@@ -54,7 +55,8 @@ class PairMatchingController(
         pairMatchingView.printInitializedMessage()
     }
 
-    private fun getMatchedCrews(course: Course, mission: String): List<List<Crew>> = pairMatchingService.getMatchedCrews(course, mission)
+    private fun getMatchedCrews(course: Course, mission: String): List<List<Crew>> =
+        pairMatchingService.getMatchedCrews(course, mission)
 
     private fun selectOption(): String = pairMatchingView.selectOption()
 

@@ -37,9 +37,7 @@ class PairMatchingService : Service() {
     ) {
         newMatchedCrews.forEach { pair ->
             pair.forEach { crew ->
-                if (matchedCrewByLevel[course] == null) {
-                    matchedCrewByLevel[course] = hashMapOf()
-                }
+                matchedCrewByLevel.getOrPut(course) { hashMapOf(level to hashMapOf()) }
                 matchedCrewByLevel[course]!![level]?.getOrPut(crew) { arrayListOf() }?.addAll(pair)
             }
         }

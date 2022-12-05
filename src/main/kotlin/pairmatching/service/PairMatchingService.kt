@@ -2,6 +2,7 @@ package pairmatching.service
 
 import camp.nextstep.edu.missionutils.Randoms
 import pairmatching.domain.Course
+import pairmatching.domain.Course.Companion.convertCourse
 import pairmatching.domain.Crew
 import pairmatching.domain.Level
 import pairmatching.util.reader.CrewReader
@@ -9,10 +10,11 @@ import pairmatching.util.reader.CrewReader
 class PairMatchingService : Service() {
     private val crewReader = CrewReader()
     private val matchedCrewByLevel = hashMapOf<Level, HashMap<Crew, ArrayList<Crew>>>()
-    private val matchedCrewByMission = hashMapOf<String, List<List<Crew>>>()
+    private val matchedCrewByMission =
+        hashMapOf<Course, HashMap<String, List<List<Crew>>>>().withDefault { hashMapOf() }
 
-    fun getMatchedCrews(mission: String): List<List<Crew>> {
-        return matchedCrewByMission[mission] ?: emptyList()
+    fun getMatchedCrews(course: Course, mission: String): List<List<Crew>> {
+        return matchedCrewByMission[course]?.get(mission) ?: emptyList()
     }
 
     fun matchCrew(course: String, level: String, mission: String): List<List<Crew>> {
@@ -25,14 +27,14 @@ class PairMatchingService : Service() {
             if (checkDuplication(newMatchedCrews, convertedLevel)) { // 중복된 경우 다시 매칭
                 continue
             }
-            addCrewByLevel(newMatchedCrews, convertedLevel)
-            matchedCrewByMission[mission] = newMatchedCrews
+            addCrewsByLevel(newMatchedCrews, convertedLevel)
+            setCrewsByMission(course, mission, newMatchedCrews)
             return newMatchedCrews
         }
         throw IllegalArgumentException(UNABLE_TO_MATCH_EXCEPTION_MESSAGE)
     }
 
-    private fun addCrewByLevel(
+    private fun addCrewsByLevel(
         newMatchedCrews: List<List<Crew>>,
         convertedLevel: Level
     ) {
@@ -43,8 +45,19 @@ class PairMatchingService : Service() {
         }
     }
 
-    fun isMatched(mission: String): Boolean {
-        if (matchedCrewByMission[mission].isNullOrEmpty()) {
+    private fun setCrewsByMission(
+        course: String,
+        mission: String,
+        newMatchedCrews: List<List<Crew>>
+    ) {
+        if (matchedCrewByMission[convertCourse(course)] == null) {
+            matchedCrewByMission[convertCourse(course)] = hashMapOf()
+        }
+        matchedCrewByMission[convertCourse(course)]!![mission] = newMatchedCrews
+    }
+
+    fun isMatched(course: Course, mission: String): Boolean {
+        if (matchedCrewByMission[course]?.get(mission).isNullOrEmpty()) {
             return false
         }
         return true
@@ -55,7 +68,7 @@ class PairMatchingService : Service() {
             throw IllegalArgumentException(INVALID_MATCHING_SIZE_EXCEPTION_MESSAGE)
         }
 
-        val mutableCrews =  ArrayList(crews)
+        val mutableCrews = ArrayList(crews)
         val matchedCrews = arrayListOf<List<Crew>>()
         while (mutableCrews.isNotEmpty()) {
             if (mutableCrews.size == MINIMUM_MATCHING_CREWS_ODD_SIZE) { // 3명 남은 경우

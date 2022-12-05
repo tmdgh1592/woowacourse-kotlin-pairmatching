@@ -1,5 +1,6 @@
 package pairmatching.controller
 
+import pairmatching.domain.Course
 import pairmatching.domain.Crew
 import pairmatching.presentation.PairMatchingView
 import pairmatching.service.PairMatchingService
@@ -28,7 +29,7 @@ class PairMatchingController(
 
     private fun matchPair() {
         val (course, level, mission) = pairMatchingView.selectPairMatchingCondition()
-        if (pairMatchingService.isMatched(mission)) { // 이미 매칭된 미션인 경우
+        if (pairMatchingService.isMatched(Course.convertCourse(course), mission)) { // 이미 매칭된 미션인 경우
             val isRematch = pairMatchingView.enterRematch()
             if (isRematch) {
                 showMatchedCrews(pairMatchingService.matchCrew(course, level, mission))
@@ -39,8 +40,8 @@ class PairMatchingController(
     }
 
     private fun inquirePair() {
-        val (_, _, mission) = pairMatchingView.selectPairMatchingCondition()
-        val matchedCrews = getMatchedCrews(mission)
+        val (course, _, mission) = pairMatchingView.selectPairMatchingCondition()
+        val matchedCrews = getMatchedCrews(Course.convertCourse(course), mission)
         showMatchedCrews(matchedCrews)
     }
 
@@ -53,7 +54,7 @@ class PairMatchingController(
         pairMatchingView.printInitializedMessage()
     }
 
-    private fun getMatchedCrews(mission: String): List<List<Crew>> = pairMatchingService.getMatchedCrews(mission)
+    private fun getMatchedCrews(course: Course, mission: String): List<List<Crew>> = pairMatchingService.getMatchedCrews(course, mission)
 
     private fun selectOption(): String = pairMatchingView.selectOption()
 

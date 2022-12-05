@@ -40,10 +40,7 @@ class PairMatchingService : Service() {
                 if (matchedCrewByLevel[course] == null) {
                     matchedCrewByLevel[course] = hashMapOf()
                 }
-                if (matchedCrewByLevel[course]!![level] == null) {
-                    matchedCrewByLevel[course]!![level] = hashMapOf()
-                }
-                matchedCrewByLevel[course]!![level]!![crew]?.addAll(pair)
+                matchedCrewByLevel[course]!![level]?.getOrPut(crew) { arrayListOf() }?.addAll(pair)
             }
         }
     }

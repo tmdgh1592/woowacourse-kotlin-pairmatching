@@ -11,6 +11,10 @@ class PairMatchingService : Service() {
     private val matchedCrewByLevel = hashMapOf<Level, HashMap<Crew, ArrayList<Crew>>>()
     private val matchedCrewByMission = hashMapOf<String, List<List<Crew>>>()
 
+    fun getMatchedCrews(mission: String): List<List<Crew>> {
+        return matchedCrewByMission[mission] ?: emptyList()
+    }
+
     fun matchCrew(course: String, level: String, mission: String): List<List<Crew>> {
         val shuffledCrews = getShuffledCrews(course)
 

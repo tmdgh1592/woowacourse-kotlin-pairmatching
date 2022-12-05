@@ -19,6 +19,7 @@ class PairMatchingController(
     private fun performOption(option: String): Boolean {
         when (option) {
             pairMatchingOption -> pairMatching()
+            showMatchedCrewOption -> inquireMatchedCrews()
             quitOption -> return QUIT
         }
         return CONTINUE
@@ -36,14 +37,23 @@ class PairMatchingController(
         }
     }
 
+    private fun inquireMatchedCrews() {
+        val (_, _, mission) = pairMatchingView.selectPairMatchingCondition()
+        val matchedCrews = getMatchedCrews(mission)
+        showMatchedCrews(matchedCrews)
+    }
+
     private fun showMatchedCrews(matchedCrews: List<List<Crew>>) {
         pairMatchingView.printMatchedCrews(matchedCrews)
     }
+
+    private fun getMatchedCrews(mission: String): List<List<Crew>> = pairMatchingService.getMatchedCrews(mission)
 
     private fun selectOption(): String = pairMatchingView.selectOption()
 
     companion object {
         private const val pairMatchingOption = "1"
+        private const val showMatchedCrewOption = "2"
         private const val quitOption = "Q"
 
         private const val QUIT = false

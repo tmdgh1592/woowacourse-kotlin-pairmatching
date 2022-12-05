@@ -44,19 +44,20 @@ class PairMatchingService : Service() {
         return true
     }
 
-    private fun match(crews: MutableList<Crew>): List<List<Crew>> {
+    private fun match(crews: List<Crew>): List<List<Crew>> {
         if (crews.size < MINIMUM_MATCHING_CREWS_SIZE) { // 최소 매칭 숫자
             throw IllegalArgumentException(INVALID_MATCHING_SIZE_EXCEPTION_MESSAGE)
         }
 
+        val mutableCrews =  ArrayList(crews)
         val matchedCrews = arrayListOf<List<Crew>>()
-        while (crews.isNotEmpty()) {
-            if (crews.size == MINIMUM_MATCHING_CREWS_ODD_SIZE) { // 3명 남은 경우
-                matchedCrews.add(crews.slice(0 until MINIMUM_MATCHING_CREWS_ODD_SIZE))
+        while (mutableCrews.isNotEmpty()) {
+            if (mutableCrews.size == MINIMUM_MATCHING_CREWS_ODD_SIZE) { // 3명 남은 경우
+                matchedCrews.add(mutableCrews.slice(0 until MINIMUM_MATCHING_CREWS_ODD_SIZE))
                 break
             }
-            matchedCrews.add(crews.slice(0 until MINIMUM_MATCHING_CREWS_SIZE))
-            crews.subList(0, MINIMUM_MATCHING_CREWS_SIZE).clear()
+            matchedCrews.add(mutableCrews.slice(0 until MINIMUM_MATCHING_CREWS_SIZE))
+            mutableCrews.subList(0, MINIMUM_MATCHING_CREWS_SIZE).clear()
         }
         return matchedCrews
     }
@@ -80,7 +81,7 @@ class PairMatchingService : Service() {
         matchedCrewByMission.clear()
     }
 
-    private fun getShuffledCrews(course: String): MutableList<Crew> {
+    private fun getShuffledCrews(course: String): List<Crew> {
         val crews = getCrews(Course.convertCourse(course))
         return Randoms.shuffle(crews)
     }

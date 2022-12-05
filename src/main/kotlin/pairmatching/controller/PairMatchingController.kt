@@ -1,9 +1,12 @@
 package pairmatching.controller
 
+import pairmatching.domain.Crew
 import pairmatching.presentation.PairMatchingView
+import pairmatching.service.PairMatchingService
 
 class PairMatchingController(
     private val pairMatchingView: PairMatchingView,
+    private val pairMatchingService: PairMatchingService
 ) {
 
     fun startPairMatching() {
@@ -23,7 +26,18 @@ class PairMatchingController(
 
     private fun pairMatching() {
         val (course, level, mission) = pairMatchingView.selectPairMatchingCondition()
-        print(course + level + mission)
+        if (pairMatchingService.isMatched(mission)) { // 이미 매칭된 미션인 경우
+            val isRematch = pairMatchingView.enterRematch()
+            if (isRematch) {
+                showMatchedCrews(pairMatchingService.matchCrew(course, level, mission))
+            }
+        } else {
+            showMatchedCrews(pairMatchingService.matchCrew(course, level, mission))
+        }
+    }
+
+    private fun showMatchedCrews(matchedCrews: List<List<Crew>>) {
+        pairMatchingView.printMatchedCrews(matchedCrews)
     }
 
     private fun selectOption(): String = pairMatchingView.selectOption()

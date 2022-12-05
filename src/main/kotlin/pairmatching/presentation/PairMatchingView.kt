@@ -1,6 +1,7 @@
 package pairmatching.presentation
 
 import camp.nextstep.edu.missionutils.Console
+import pairmatching.domain.Crew
 import pairmatching.util.validator.InputValidator
 
 class PairMatchingView(
@@ -31,6 +32,26 @@ class PairMatchingView(
         }
     }
 
+    fun enterRematch(): Boolean {
+        println(REMATCH_MESSAGE)
+        return try {
+            val isRematch = Console.readLine()
+            printEnter()
+            inputValidator.validateRematch(isRematch)
+        } catch (error: IllegalArgumentException) {
+            printError(error)
+            enterRematch()
+        }
+    }
+
+    fun printMatchedCrews(matchedCrews: List<List<Crew>>) {
+        matchedCrews.forEach { crews ->
+            val pairMatchedCrewNames = crews.map { crew -> crew.name }
+            println(pairMatchedCrewNames.joinToString(" : "))
+        }
+        println()
+    }
+
 
     companion object {
         private const val SELECT_OPTION_MESSAGE =
@@ -46,6 +67,8 @@ class PairMatchingView(
                 "############################################\n" +
                 "과정, 레벨, 미션을 선택하세요.\n" +
                 "ex) 백엔드, 레벨1, 자동차경주"
+        private const val REMATCH_MESSAGE = "매칭 정보가 있습니다. 다시 매칭하시겠습니까?\n" +
+                "네 | 아니오"
 
     }
 }

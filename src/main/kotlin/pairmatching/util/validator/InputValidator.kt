@@ -48,10 +48,21 @@ class InputValidator : Validator() {
     }
 
     private fun validateMission(level: String, mission: String) {
-        val missionsByLevel = Mission.provideMissions(level)
+        val missionsByLevel = Mission.provideMissions(Level.convertLevel(level))
         if (mission !in missionsByLevel) {
             throw IllegalArgumentException(INVALID_MISSION_EXCEPTION_MESSAGE)
         }
+    }
+
+    fun validateRematch(rematch: String): Boolean {
+        if (rematch == "네") {
+            return true
+        }
+        if (rematch == "아니오") {
+            return false
+        }
+
+        throw IllegalArgumentException(INVALID_REMATCH_EXCEPTION_MESSAGE)
     }
 
     companion object {
@@ -60,5 +71,6 @@ class InputValidator : Validator() {
         private const val INVALID_COURSE_EXCEPTION_MESSAGE = "$ERROR_PREFIX 올바른 코스명이 아닙니다."
         private const val INVALID_LEVEL_EXCEPTION_MESSAGE = "$ERROR_PREFIX 올바른 레벨이 아닙니다."
         private const val INVALID_MISSION_EXCEPTION_MESSAGE = "$ERROR_PREFIX 올바른 미션이 아닙니다."
+        private const val INVALID_REMATCH_EXCEPTION_MESSAGE = "$ERROR_PREFIX 네 또는 아니오만 입력할 수 있습니다."
     }
 }
